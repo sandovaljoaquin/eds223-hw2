@@ -1,0 +1,50 @@
+---
+title: "Homework 2"
+format: html
+editor: visual
+author: Joaquin Sandoval
+---
+
+## 1. Legacy of redlining in current environmental (in)justice
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(sf)
+library(tmap)
+```
+
+## Data Import 
+```{r}
+
+# Import HOLC Redlining data 
+
+redline <- st_read(here::here("data", "mapping-inequality", "mapping-inequality-los-angeles.json")) 
+
+# Import bird biodiversity observations dataset
+
+birds <- st_read(here::here("data", "gbif-birds-LA", "gbif-birds-LA.shp"))
+```
+
+
+```{r}
+# Check that both data sets have the same CRS. 
+
+st_crs(redline) == st_crs(birds)
+```
+
+
+## Map of Historical Redlining Neighborhoods 
+
+```{r}
+# Plotting redline data colored by HOLC grade 
+
+tm_shape(redline) + 
+  tm_polygons(fill = "grade", 
+              # Edit legend title 
+              fill.legend = tm_legend(title = "HOLC Grade")) + 
+  # Edit main title 
+tm_layout(main.title = "Historical Redlining - Los Angeles, CA") 
+
+```
+
