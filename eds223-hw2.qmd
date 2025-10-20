@@ -3,9 +3,10 @@ title: "Homework 2"
 format: html
 editor: visual
 author: Joaquin Sandoval
+date: 10/19/2025
 ---
 
-## Part 1. Legacy of redlining in current environmental (in)justice
+## Part 1. Legacy of Redlining in Current Environmental (In)Justice
 
 Import necessary packages 
 ```{r, message=FALSE}
@@ -18,15 +19,18 @@ library(patchwork)
 ```
 
 ## Data Import
-Import EJ screen, redlining, and bird data
+
+Import each data set
 ```{r, output = FALSE}
-# Import HOLC Redlining data 
+# Import HOLC redlining data 
 
 redline <- st_read(here::here("data", "mapping-inequality", "mapping-inequality-los-angeles.json")) 
 
 # Import bird biodiversity observations dataset
 
 birds <- st_read(here::here("data", "gbif-birds-LA", "gbif-birds-LA.shp"))
+
+# Import EJ Screen data
 
 ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
 
@@ -36,9 +40,7 @@ ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct
 # Check that redline data and ej screen data have the same CRS 
 
 st_crs(redline) == st_crs(ejscreen)
-
 ```
-
 
 ```{r}
 # Transform CRS redline data to CRS of ej screen 
@@ -75,6 +77,9 @@ tm_shape(ej_la)+
 tm_shape(redline,
          is.main =TRUE) + 
   tm_polygons(fill = "grade", 
+              
+# Update color scale to grade scale 
+
               fill.scale = tm_scale(values = c("green4", "dodgerblue", "gold1", "tomato3")),
               fill.legend = tm_legend("HOLC Grade")) + 
   tm_compass(position = c("right","bottom")) +
@@ -111,7 +116,10 @@ ej_redline |>
   
   kable(col.names = c("Grade",
                            "Number of Census Block Groups",
-                           "Percentage of Census Block Groups"), 
+                           "Percentage of Census Block Groups"),
+        
+# Add caption to specify NA row name observations were not in a HOLC grade 
+        
         caption = "NA refers to the census block groups that do not fall within a HOLC grade.") |> 
   kable_minimal()
 ```
@@ -164,7 +172,9 @@ low_income_plot <- ggplot(mean_perc_low_income_table,
                                 "D" = "tomato3")) + 
   theme(plot.title = element_text(hjust = 0.3)) + 
   theme_classic()
+```
 
+```{r}
 # Bar plot visualizing mean percentile pm 2.5 with respect to HOLC grade 
 
 pm25_plot <- ggplot(mean_pm25_table, 
@@ -184,7 +194,9 @@ pm25_plot <- ggplot(mean_pm25_table,
                                 "D" = "tomato3")) + 
   theme(plot.title = element_text(hjust = 0.3)) + 
   theme_classic()
+```
 
+```{r}
 # Bar plot visualizing mean percent low life expectancy with respect to HOLC grade
 
 low_life_plot <- ggplot(mean_perc_low_life_table, 
@@ -202,16 +214,19 @@ low_life_plot <- ggplot(mean_perc_low_life_table,
                                 "D" = "tomato3")) + 
   theme(plot.title = element_text(hjust = 0.3)) + 
   theme_classic()
+```
+
+```{r}
+# Visualize plots 
 
 low_income_plot
 pm25_plot
 low_life_plot
-
 ```
 
 ## 4. Interpreting Results
 
-The mean values of percent low income, percentile particulate matter, and percent low life expectancy across the board, increase with each drop in HOLC grade. The highest mean values for these indicators of environmental injustice fall within the D grade; neighborhoods that were predominantly minorities and people of lower income. Each grade deemed "safer to invest in" by the Home Owners' Loan Corporation had lower means across each variable of interest displayed above by the colored bar graphs. The mean of percentiles for particulate matter 2.5 are subtle and range from approximately 10.05 to 10.52. Being in Los Angeles, air quality may be generally uniform but redlined areas on avergae may be closer in proximity to highways and traffic and may have higher exposure than areas in other HOLC grades. 
+The mean values of percent low income, percentile particulate matter, and percent low life expectancy all increase with each drop in HOLC grade. The highest mean values for these indicators of environmental injustice fall within the D grade; neighborhoods that were predominantly minorities and people of lower income. Each grade deemed "safer to invest in" by the Home Owners' Loan Corporation had lower means across each variable of interest displayed above by the colored bar graphs. The mean of percentiles for particulate matter 2.5 are subtle and range from approximately 10.05 to 10.52. Being in Los Angeles, air quality may be generally uniform but redlined areas on avergae may be closer in proximity to highways and traffic and may have higher exposure than areas in other HOLC grades. 
 
 ## Part 2: Legacy of Redlining in Biodiversity Observations
 
@@ -220,7 +235,6 @@ The mean values of percent low income, percentile particulate matter, and percen
 
 st_crs(birds) == st_crs(redline_transform)
 ```
-
 
 ```{r}
 # Transform CRS of bird data to CRS of transformed redline data  
@@ -237,14 +251,12 @@ if(st_crs(bird_transform) == st_crs(redline_transform)){
 
 ```
 
-
 ```{r}
 # Join bird and redline datasets with matching CRS 
 
 bird_redline <- st_join(bird_transform, redline_transform, join =  st_intersects) |> 
   drop_na()
 ```
-
 
 ```{r}
 # Subsetting for bird observations that took place between 2021 and 2023
@@ -258,7 +270,6 @@ birds_grade <- bird_redline |>
   mutate(percentage_obs_grade = observations_per_grade/sum(observations_per_grade) *100) |> 
   st_drop_geometry()
 ```
-
 
 ```{r}
 # Plotting subset 
@@ -279,3 +290,7 @@ ggplot(birds_grade,
   theme(plot.title = element_text(hjust = 0.3)) + 
   theme_classic()
 ```
+
+## Interpreting Results
+
+The results displayed in the above bar graph do not match the findings of Ellis-Soto et al. 2023. The paper found significatly less monitoring in redlined areas relative to "desirable" areas. The percent of bird observations in grade D is roughly equal to grade A. The paper considered the confounding influence of differences in present day vegetation, open space, population density, and climate that we did not consider. They highlight the importance of considering socio-political conditions when analyzing bird densities in urban environments. 
