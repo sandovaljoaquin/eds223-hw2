@@ -86,7 +86,6 @@ tm_shape(redline,
   tm_scalebar(position = c("right", "bottom")) +
   tm_title("Historical Redlining - Los Angeles, CA") 
 ```
-
 ## 2. Summary Table
 
 ```{r}
