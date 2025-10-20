@@ -1,4 +1,3 @@
-# EDS 223 Homework Assignment #2 
 # Exploring Patterns of Environmental Justice
 
 The purpose of this repository is to explore the overlap of historical "redlining", environmental justice, and observations of bird biodiversity.  
